@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="PF ASSIST" />
+<meta name="theme-color" content="#1C2B45" />
+<title>PF ASSIST</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='18' fill='%231C2B45'/%3E%3Ctext x='50' y='62' font-family='Georgia,serif' font-size='40' font-weight='bold' fill='%23F1ECDC' text-anchor='middle'%3EPF%3C/text%3E%3C/svg%3E" />
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%231C2B45'/%3E%3Ctext x='50' y='62' font-family='Georgia,serif' font-size='40' font-weight='bold' fill='%23F1ECDC' text-anchor='middle'%3EPF%3C/text%3E%3C/svg%3E" />
+<link rel="manifest" href='data:application/manifest+json,{"name":"PF ASSIST","short_name":"PF ASSIST","start_url":".","display":"standalone","background_color":"%23F1ECDC","theme_color":"%231C2B45"}' />
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Special+Elite&family=Inter:wght@400;500;600;700&display=swap');
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin:0; padding:0; background:#F1ECDC; color:#1C2B45; font-family:'Inter',system-ui,sans-serif; overscroll-behavior-y: contain; }
+  .stamp { font-family:'Special Elite', monospace; }
+  input, select, textarea, button { font-family:'Inter',system-ui,sans-serif; }
+  ::placeholder { color:#9c9585; }
+  a { text-decoration:none; }
+
+  header.top { background:#1C2B45; padding:18px 16px 14px; position:sticky; top:0; z-index:20; padding-top: calc(18px + env(safe-area-inset-top)); }
+  .tape { height:4px; background:linear-gradient(90deg,#A6293A,#c94a5c,#A6293A); margin-bottom:14px; border-radius:2px; }
+  header.top h1 { color:#F1ECDC; font-size:21px; margin:0; letter-spacing:.5px; }
+  header.top p { color:#9AA7BE; font-size:12.5px; margin:4px 0 0; }
+
+  .stats { display:flex; gap:8px; padding:12px 16px 4px; overflow-x:auto; }
+  .stat-card { background:#fff; border:1px solid #E2DBC5; border-radius:8px; padding:10px 12px; min-width:92px; flex-shrink:0; box-shadow:0 1px 2px rgba(28,43,69,0.06); }
+  .stat-card .v { font-size:17px; font-weight:700; }
+  .stat-card .l { font-size:10.5px; color:#6B6558; margin-top:2px; }
+
+  .searchrow { padding:10px 16px; display:flex; gap:8px; }
+  .searchbox { flex:1; display:flex; align-items:center; background:#fff; border:1px solid #E2DBC5; border-radius:8px; padding:8px 10px; }
+  .searchbox input { border:none; outline:none; margin-left:8px; font-size:14px; width:100%; background:transparent; color:#1C2B45; }
+  .filterbtn { background:#fff; border:1px solid #E2DBC5; border-radius:8px; padding:0 12px; color:#1C2B45; }
+  .filterbtn.active { background:#1C2B45; color:#fff; }
+
+  .chips { display:flex; gap:6px; flex-wrap:wrap; padding:0 16px 6px; }
+  .chip { font-size:12px; padding:5px 11px; border-radius:999px; border:1px solid #E2DBC5; background:#fff; }
+
+  .list { padding:4px 16px 110px; }
+  .empty { text-align:center; padding:50px 20px; color:#9c9585; }
+
+  .card { display:flex; background:#fff; border:1px solid #E2DBC5; border-radius:8px; margin-bottom:10px; overflow:hidden; box-shadow:0 1px 2px rgba(28,43,69,0.06); }
+  .card .tab { width:5px; flex-shrink:0; }
+  .card .body { flex:1; padding:11px 12px; }
+  .card .rowtop { display:flex; justify-content:space-between; align-items:flex-start; gap:8px; }
+  .card .name { font-weight:600; font-size:15px; }
+  .card .phone { display:flex; align-items:center; gap:4px; color:#6B6558; font-size:12.5px; margin-top:2px; }
+  .card .acts button { background:#F1ECDC; border:none; border-radius:6px; padding:6px; margin-left:4px; }
+  .card .acts .del { background:#F3DBDF; }
+  .badgerow { display:flex; flex-wrap:wrap; gap:6px; margin-top:8px; align-items:center; }
+  .badge { font-size:11px; padding:3px 8px; border-radius:999px; font-weight:600; }
+  .svc { font-size:11px; color:#6B6558; }
+  .datex { font-size:11px; color:#9c9585; }
+  .feerow { display:flex; justify-content:space-between; align-items:center; margin-top:8px; }
+  .fee { display:flex; align-items:center; gap:3px; font-size:13.5px; font-weight:600; }
+  .paidstamp { font-size:10.5px; color:#3F7355; border:1.5px solid #3F7355; border-radius:4px; padding:1px 7px; transform:rotate(-6deg); letter-spacing:1px; opacity:.85; display:inline-block; }
+  .unpaid { font-size:10.5px; color:#A6293A; font-weight:500; }
+  .notes { font-size:12px; color:#6B6558; margin-top:6px; border-top:1px dashed #E2DBC5; padding-top:6px; }
+  .credrow { display:flex; align-items:center; gap:6px; font-size:11.5px; color:#6B6558; margin-top:6px; background:#F7F4EA; border-radius:6px; padding:5px 8px; }
+  .credrow button { background:none; border:none; color:#34588F; font-size:11px; padding:0; margin-left:auto; }
+
+  .fab { position:fixed; bottom: calc(22px + env(safe-area-inset-bottom)); right:20px; width:54px; height:54px; border-radius:50%; background:#A6293A; border:none; color:#fff; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 12px rgba(166,41,58,0.4); font-size:28px; z-index:25; }
+
+  .overlay { position:fixed; inset:0; background:rgba(28,43,69,0.5); display:flex; align-items:flex-end; justify-content:center; z-index:30; }
+  .overlay.center { align-items:center; padding:24px; }
+  .sheet { background:#F1ECDC; width:100%; max-height:88vh; overflow-y:auto; border-radius:16px 16px 0 0; padding:18px; padding-bottom: calc(18px + env(safe-area-inset-bottom)); }
+  .sheet h2 { font-size:16px; margin:0; }
+  .sheethead { display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; }
+  .closebtn { background:none; border:none; font-size:20px; color:#1C2B45; }
+  .field { margin-bottom:12px; }
+  .field label { font-size:12px; color:#6B6558; margin-bottom:4px; font-weight:500; display:block; }
+  .field .hint { font-size:11px; color:#9c9585; margin-top:3px; }
+  .field input, .field select, .field textarea { width:100%; padding:9px 11px; border-radius:7px; border:1px solid #E2DBC5; font-size:14px; background:#fff; color:#1C2B45; outline:none; }
+  .field textarea { min-height:60px; resize:vertical; }
+  .checkrow { display:flex; align-items:center; gap:8px; font-size:13.5px; margin-bottom:12px; }
+  .submitbtn { width:100%; margin-top:6px; background:#1C2B45; color:#fff; border:none; border-radius:8px; padding:12px 0; font-size:14.5px; font-weight:600; }
+  .sectionlabel { font-size:11px; text-transform:uppercase; letter-spacing:.5px; color:#9C6A1E; font-weight:700; margin:16px 0 8px; border-top:1px dashed #E2DBC5; padding-top:12px; }
+
+  .dialog { background:#fff; border-radius:10px; padding:20px; max-width:320px; width:100%; }
+  .dialog .t { font-weight:600; margin-bottom:6px; font-size:15px; }
+  .dialog .d { font-size:13px; color:#6B6558; margin-bottom:16px; }
+  .dialog .btnrow { display:flex; gap:8px; }
+  .dialog .btnrow button { flex:1; padding:9px 0; border-radius:7px; font-size:13.5px; }
+  .btn-cancel { border:1px solid #E2DBC5; background:#fff; color:#1C2B45; }
+  .btn-danger { border:none; background:#A6293A; color:#fff; }
+
+  .toast { position:fixed; bottom:90px; left:16px; right:16px; background:#A6293A; color:#fff; font-size:12.5px; padding:8px 12px; border-radius:8px; text-align:center; z-index:50; }
+  .installtip { margin:0 16px 4px; font-size:11.5px; color:#6B6558; background:#fff; border:1px dashed #E2DBC5; border-radius:8px; padding:8px 10px; display:flex; justify-content:space-between; align-items:center; gap:8px; }
+  .installtip button { background:none; border:none; color:#9c9585; font-size:15px; }
+</style>
+</head>
+<body>
+<div id="app"></div>
+
+<script>
+const STATUS = [
+  { key:'new', label:'New', color:'#6B6558', bg:'#EFEBDD' },
+  { key:'docs', label:'Docs Pending', color:'#9C6A1E', bg:'#F3E4C4' },
+  { key:'submitted', label:'Submitted', color:'#34588F', bg:'#DCE6F2' },
+  { key:'process', label:'In Process', color:'#5B3F9C', bg:'#E6DEF3' },
+  { key:'completed', label:'Completed', color:'#3F7355', bg:'#DCEBE1' },
+  { key:'rejected', label:'Rejected', color:'#A6293A', bg:'#F3DBDF' },
+];
+
+const SERVICES = [
+  { name:'PF Claim (Partial Withdrawal)', type:'percent', value:3, note:'3% of withdrawal amount' },
+  { name:'PF + Pension Full Withdrawal', type:'percent', value:10, note:'10% of total accumulated amount' },
+  { name:'PF Transfer to New Account', type:'fixed', value:100, note:'₹100 per transfer request' },
+  { name:'UAN Activation & Allotment', type:'fixed', value:150, note:'₹150 per UAN generation/activation' },
+  { name:'KYC Linkage (Bank/PAN/Passport)', type:'fixed', value:200, note:'₹200 per document link' },
+  { name:'Update Personal Details', type:'fixed', value:200, note:'₹200 per update transaction' },
+  { name:'Update Family Details', type:'fixed', value:200, note:'₹200 per update transaction' },
+  { name:'Nominee Addition (E-Nomination)', type:'fixed', value:220, note:'₹220 per nomination form' },
+  { name:'Mark Date of Exit (DOE)', type:'fixed', value:250, note:'₹250 per individual profile' },
+  { name:'PF Balance Statement Download', type:'fixed', value:50, note:'₹50 per statement (view-only free)' },
+  { name:'Claim Rejected Solutions', type:'variable', value:null, note:'Variable, case-to-case (complexity)' },
+  { name:'Other', type:'variable', value:null, note:'Custom service' },
+];
+
+const statusInfo = k => STATUS.find(s => s.key===k) || STATUS[0];
+const serviceInfo = n => SERVICES.find(s => s.name===n) || SERVICES[SERVICES.length-1];
+const uid = () => Date.now().toString(36)+Math.random().toString(36).slice(2,7);
+const todayISO = () => new Date().toISOString().slice(0,10);
+const fmtDate = iso => new Date(iso).toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'});
+const esc = s => (s||'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+let customers = [];
+let loaded = false;
+let showForm = false;
+let editingId = null;
+let form = null;
+let search = '';
+let statusFilter = 'all';
+let showFilters = false;
+let confirmDelete = null;
+let saveError = '';
+let showInstallTip = !window.matchMedia('(display-mode: standalone)').matches;
+let visiblePasswords = {};
+
+function emptyForm(){
+  return { name:'', phone:'', uan:'', password:'', serviceType:SERVICES[0].name, baseAmount:'', status:'new', fee:'', paid:false, notes:'' };
+}
+
+async function loadData(){
+  try {
+    const raw = localStorage.getItem('customers-data');
+    if (raw) customers = JSON.parse(raw);
+  } catch(e) {}
+  loaded = true;
+  render();
+}
+
+async function persist(next){
+  customers = next;
+  try {
+    localStorage.setItem('customers-data', JSON.stringify(next));
+    saveError = '';
+  } catch(e) {
+    saveError = 'Could not save, please try again';
+  }
+  render();
+  if (saveError) setTimeout(()=>{ saveError=''; render(); }, 3000);
+}
+
+function openAdd(){ form = emptyForm(); editingId=null; showForm=true; render(); }
+function openEdit(id){
+  const c = customers.find(x=>x.id===id);
+  form = { ...c, fee:String(c.fee ?? ''), baseAmount:String(c.baseAmount ?? ''), password:c.password||'' };
+  editingId = id; showForm = true; render();
+}
+function closeForm(){ showForm=false; form=null; editingId=null; render(); }
+
+function onServiceChange(sel){
+  const svc = serviceInfo(sel.value);
+  form.serviceType = sel.value;
+  if (svc.type === 'fixed') { form.fee = String(svc.value); form.baseAmount=''; }
+  if (svc.type === 'variable') { form.fee=''; form.baseAmount=''; }
+  if (svc.type === 'percent') { form.baseAmount = form.baseAmount || ''; form.fee = ''; }
+  render();
+}
+
+function onBaseAmountChange(val){
+  form.baseAmount = val;
+  const svc = serviceInfo(form.serviceType);
+  if (svc.type==='percent' && val) {
+    form.fee = String(Math.round(Number(val) * svc.value / 100));
+  }
+  render();
+}
+
+function togglePw(id){ visiblePasswords[id] = !visiblePasswords[id]; render(); }
+
+function submitForm(e){
+  e.preventDefault();
+  const fd = new FormData(e.target);
+  const data = {
+    name: fd.get('name').trim(),
+    phone: fd.get('phone').trim(),
+    uan: fd.get('uan').trim(),
+    password: fd.get('password').trim(),
+    serviceType: fd.get('serviceType'),
+    baseAmount: Number(fd.get('baseAmount'))||0,
+    status: fd.get('status'),
+    fee: Number(fd.get('fee'))||0,
+    paid: fd.get('paid')==='on',
+    notes: fd.get('notes').trim(),
+  };
+  if (!data.name || !data.phone) return;
+  if (editingId){
+    persist(customers.map(c => c.id===editingId ? {...c, ...data} : c));
+  } else {
+    persist([{ ...data, id:uid(), dateAdded: todayISO() }, ...customers]);
+  }
+  closeForm();
+}
+
+function doDelete(id){ persist(customers.filter(c=>c.id!==id)); confirmDelete=null; render(); }
+
+function getFiltered(){
+  const q = search.trim().toLowerCase();
+  return customers.filter(c=>{
+    const mS = statusFilter==='all' || c.status===statusFilter;
+    const mQ = !q || c.name.toLowerCase().includes(q) || c.phone.includes(q) || (c.uan||'').toLowerCase().includes(q);
+    return mS && mQ;
+  });
+}
+
+function getStats(){
+  const total = customers.length;
+  const pending = customers.filter(c=>!['completed','rejected'].includes(c.status)).length;
+  const now = new Date();
+  const thisMonth = customers.filter(c=>{
+    const d = new Date(c.dateAdded);
+    return c.status==='completed' && d.getMonth()===now.getMonth() && d.getFullYear()===now.getFullYear();
+  }).length;
+  const earned = customers.filter(c=>c.paid).reduce((s,c)=>s+(Number(c.fee)||0),0);
+  return { total, pending, thisMonth, earned };
+}
+
+function render(){
+  const app = document.getElementById('app');
+  const stats = getStats();
+  const filtered = getFiltered();
+  const activeSvc = form ? serviceInfo(form.serviceType) : null;
+
+  app.innerHTML = `
+    <header class="top">
+      <div class="tape"></div>
+      <h1 class="stamp">PF ASSIST</h1>
+      <p>Customer Management System</p>
+    </header>
+
+    ${showInstallTip ? `
+    <div class="installtip">
+      <span>📱 To use like an app, open your browser menu and tap "Add to Home Screen"</span>
+      <button onclick="showInstallTip=false;render()">✕</button>
+    </div>` : ''}
+
+    <div class="stats">
+      <div class="stat-card"><div class="v">${stats.total}</div><div class="l">Total Customers</div></div>
+      <div class="stat-card"><div class="v">${stats.pending}</div><div class="l">In Process</div></div>
+      <div class="stat-card"><div class="v">${stats.thisMonth}</div><div class="l">Completed This Month</div></div>
+      <div class="stat-card"><div class="v">₹${stats.earned.toLocaleString('en-IN')}</div><div class="l">Total Earned</div></div>
+    </div>
+
+    <div class="searchrow">
+      <div class="searchbox">
+        <span>🔍</span>
+        <input id="searchInput" placeholder="Search name, phone or UAN" value="${esc(search)}" oninput="search=this.value;render();this.selectionStart=this.selectionEnd=${search.length};" />
+      </div>
+      <button class="filterbtn ${showFilters?'active':''}" onclick="showFilters=!showFilters;render()">☰</button>
+    </div>
+
+    ${showFilters ? `
+    <div class="chips">
+      <button class="chip" style="${statusFilter==='all'?'background:#1C2B45;color:#fff':'color:#6B6558'}" onclick="statusFilter='all';render()">All</button>
+      ${STATUS.map(s=>`<button class="chip" style="${statusFilter===s.key?`background:${s.color};color:#fff`:`color:${s.color}`}" onclick="statusFilter='${s.key}';render()">${s.label}</button>`).join('')}
+    </div>` : ''}
+
+    <div class="list">
+      ${!loaded ? `<div class="empty">Loading...</div>` : ''}
+      ${loaded && filtered.length===0 ? `
+        <div class="empty">
+          <div style="font-size:34px;opacity:.4;margin-bottom:10px;">📋</div>
+          <div style="font-size:14px;">${customers.length===0 ? 'No customers added yet.' : 'No matches found.'}</div>
+          ${customers.length===0 ? `<div style="font-size:12.5px;margin-top:4px;">Tap + below to add your first customer.</div>` : ''}
+        </div>` : ''}
+      ${filtered.map(c=>{
+        const si = statusInfo(c.status);
+        const svc = serviceInfo(c.serviceType);
+        const pwVisible = !!visiblePasswords[c.id];
+        return `
+        <div class="card">
+          <div class="tab" style="background:${si.color}"></div>
+          <div class="body">
+            <div class="rowtop">
+              <div>
+                <div class="name">${esc(c.name)}</div>
+                <div class="phone">📞 ${esc(c.phone)}${c.uan?` <span style="margin-left:6px">UAN: ${esc(c.uan)}</span>`:''}</div>
+              </div>
+              <div class="acts">
+                <button onclick="openEdit('${c.id}')">✏️</button>
+                <button class="del" onclick="confirmDelete='${c.id}';render()">🗑️</button>
+              </div>
+            </div>
+            ${c.password ? `
+            <div class="credrow">
+              <span>🔑 Password: ${pwVisible ? esc(c.password) : '••••••••'}</span>
+              <button onclick="togglePw('${c.id}')">${pwVisible ? 'Hide' : 'Show'}</button>
+            </div>` : ''}
+            <div class="badgerow">
+              <span class="badge" style="background:${si.bg};color:${si.color}">${si.label}</span>
+              <span class="svc">${esc(c.serviceType)}${svc.type==='percent' && c.baseAmount ? ` (on ₹${Number(c.baseAmount).toLocaleString('en-IN')})` : ''}</span>
+              <span class="datex">· ${fmtDate(c.dateAdded)}</span>
+            </div>
+            <div class="feerow">
+              <div class="fee">₹ ${(c.fee||0).toLocaleString('en-IN')}</div>
+              ${c.paid ? `<span class="paidstamp stamp">PAID</span>` : `<span class="unpaid">Payment Pending</span>`}
+            </div>
+            ${c.notes ? `<div class="notes">${esc(c.notes)}</div>` : ''}
+          </div>
+        </div>`;
+      }).join('')}
+    </div>
+
+    ${saveError ? `<div class="toast">${saveError}</div>` : ''}
+
+    <button class="fab" onclick="openAdd()">+</button>
+
+    ${confirmDelete ? `
+    <div class="overlay center">
+      <div class="dialog">
+        <div class="t">Delete customer?</div>
+        <div class="d">This action cannot be undone.</div>
+        <div class="btnrow">
+          <button class="btn-cancel" onclick="confirmDelete=null;render()">Cancel</button>
+          <button class="btn-danger" onclick="doDelete('${confirmDelete}')">Delete</button>
+        </div>
+      </div>
+    </div>` : ''}
+
+    ${showForm ? `
+    <div class="overlay">
+      <div class="sheet">
+        <div class="sheethead">
+          <h2 class="stamp">${editingId ? 'Edit Customer' : 'Add New Customer'}</h2>
+          <button class="closebtn" onclick="closeForm()">✕</button>
+        </div>
+        <form onsubmit="submitForm(event)">
+          <div class="field"><label>Name *</label><input name="name" required value="${esc(form.name)}" placeholder="Customer's name" /></div>
+          <div class="field"><label>Mobile Number *</label><input name="phone" required value="${esc(form.phone)}" placeholder="10-digit number" /></div>
+
+          <div class="sectionlabel">EPFO Login Details</div>
+          <div class="field"><label>UAN Number</label><input name="uan" value="${esc(form.uan)}" placeholder="Universal Account Number" /></div>
+          <div class="field"><label>Password</label><input name="password" value="${esc(form.password)}" placeholder="EPFO portal password" /></div>
+
+          <div class="sectionlabel">Service & Fee</div>
+          <div class="field">
+            <label>Service Type</label>
+            <select name="serviceType" onchange="onServiceChange(this)">${SERVICES.map(s=>`<option value="${esc(s.name)}" ${form.serviceType===s.name?'selected':''}>${s.name}</option>`).join('')}</select>
+            <div class="hint">${esc(activeSvc.note)}</div>
+          </div>
+          ${activeSvc.type==='percent' ? `
+          <div class="field">
+            <label>${activeSvc.name.includes('Full') ? 'Total Accumulated Amount (₹)' : 'Withdrawal Amount (₹)'}</label>
+            <input name="baseAmount" type="number" min="0" value="${esc(form.baseAmount)}" oninput="onBaseAmountChange(this.value)" placeholder="e.g. 50000" />
+          </div>` : ''}
+          <div class="field">
+            <label>Fee (₹)${activeSvc.type==='percent' ? ' — auto-calculated, editable' : ''}</label>
+            <input name="fee" type="number" min="0" value="${esc(form.fee)}" placeholder="0" />
+          </div>
+
+          <div class="field"><label>Status</label>
+            <select name="status">${STATUS.map(s=>`<option value="${s.key}" ${form.status===s.key?'selected':''}>${s.label}</option>`).join('')}</select>
+          </div>
+          <label class="checkrow"><input type="checkbox" name="paid" ${form.paid?'checked':''} /> Payment received</label>
+          <div class="field"><label>Notes</label><textarea name="notes" placeholder="Any additional details...">${esc(form.notes)}</textarea></div>
+
+          <button type="submit" class="submitbtn">${editingId ? 'Update' : 'Add Customer'}</button>
+        </form>
+      </div>
+    </div>` : ''}
+  `;
+}
+
+loadData();
+</script>
+</body>
+</html>
